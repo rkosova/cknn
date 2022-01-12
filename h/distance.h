@@ -1,2 +1,2 @@
 
-float distance(float *unclassified_vector, float *cassified_vector, int dimension);
+double distance(double *unclassified_vector, double *cassified_vector, int dimension);
