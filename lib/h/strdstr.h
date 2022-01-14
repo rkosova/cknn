@@ -1,3 +1,3 @@
 
 char** strdstr(char *in, char delimiter);
-// void remove_newline(char *in);
+int count_delim(char *in, char delimiter);
