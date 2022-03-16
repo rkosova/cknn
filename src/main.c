@@ -14,6 +14,7 @@ typedef struct {
 
 int get_rows(FILE *classified_data, int const BUFFER_SIZE);
 void temp_sort(ClassInfo *data, int num_of_rows);
+void k_classify(ClassInfo *data, int k);
 
 int main(int argc, char const *argv[])
 {
@@ -124,3 +125,23 @@ void temp_sort(ClassInfo *data, int num_of_rows) // selection sort for now
 		// printf("--------------------------------------------------\n");
 	}
 }
+
+// TODO: 
+
+//  - Add check to see if number of rows > k
+// 	- Classify using k-neighbours
+
+void k_classify(ClassInfo *data, int k) 
+{
+	char *class_buffer[k];
+
+	*class_buffer = data->class_value; // getting the class to the closest 
+
+	for (int i=1; i<k; i++) {
+		// add way to check if a value is in array
+	}
+
+
+}
+
+
