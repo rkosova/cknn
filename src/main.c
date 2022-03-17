@@ -1,14 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../lib/h/strdstr.h"
 #include "../h/strdstrtod.h"
 #include "../h/distance.h"
 
+// comments are temporary docs so i dont forget what code does when i write actual docs lol
 
 typedef struct {
 	int index;
 	double distance;
-	char *class_value;
+	char const *class_value;
 } ClassInfo; 
 
 
@@ -64,17 +66,19 @@ int main(int argc, char const *argv[])
 		temp_sort(distances, num_of_rows);
 
 
-		printf("\n==========================================================\n");
+		k_classify(distances, 3);
+
+		// printf("\n==========================================================\n");
 
 
-		for(int i=0; i<num_of_rows; i++) {
-			printf("\nindex: %i, distance: %lf, class: %s\n", distances[i].index, distances[i].distance, distances[i].class_value);
-		}
+		// for(int i=0; i<num_of_rows; i++) {
+		// 	printf("\nindex: %i, distance: %lf, class: %s\n", distances[i].index, distances[i].distance, distances[i].class_value);
+		// }
 
-		printf("Data point %s has class %s\n", unclassified_buffer, distances[0].class_value);
+		// printf("Data point %s has class %s\n", unclassified_buffer, distances[0].class_value);
 
 
-		printf("\n==========================================================\n");
+		// printf("\n==========================================================\n");
 
 		rewind(classified_data);
 
@@ -131,16 +135,33 @@ void temp_sort(ClassInfo *data, int num_of_rows) // selection sort for now
 //  - Add check to see if number of rows > k
 // 	- Classify using k-neighbours
 
+int is_class_in(const char **buffer, const char *class, int k) 
+{
+	for (int i=0; i < (k-1); i++) {
+		if (!strcmp(class, *(buffer + i))) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 void k_classify(ClassInfo *data, int k) 
 {
-	char *class_buffer[k];
-
-	*class_buffer = data->class_value; // getting the class to the closest 
+	char const *class_buffer[k]; // can have at most k values since we only evaluate k data points
+	// since class_buffer is an array of char pointers, when we pass the array variable name to the is_class_in function
+	// it evaluates to a pointer that points to a char pointer so the parameter must be a pointer to a char pointer.
+	
+	*class_buffer = data->class_value; // getting the class to the closest data point
 
 	for (int i=1; i<k; i++) {
 		// add way to check if a value is in array
+		if (!is_class_in(class_buffer, (data+i)->class_value, k)) {
+			*(class_buffer+i) = (data+i)->class_value;
+		} 
 	}
 
+	// TODO get average distance per class
 
 }
 
