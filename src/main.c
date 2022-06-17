@@ -168,9 +168,6 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 		}
 	}
 
-	// LEFT TO DO:
-	// - Free memory,
-	// - Clean up code and remove debug info.
 
 	fprintf(classifying_file, "%s\n", classes_unique[smallest_index]);
 }
