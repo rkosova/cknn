@@ -16,9 +16,8 @@ typedef struct {
 
 int get_rows(FILE *classified_data, int const BUFFER_SIZE);
 void temp_sort(ClassInfo *data, int num_of_rows);
-void k_classify(ClassInfo *data, int k);
 char is_class_in(char const *word, char const **data, int added);
-void k_classify(ClassInfo *data, int k);
+void k_classify(ClassInfo *data, int k, FILE *classifying_file);
 
 
 int main(int argc, char const *argv[])
@@ -26,13 +25,15 @@ int main(int argc, char const *argv[])
 
 	int const BUFFER_SIZE = 700;
 
-	char const *path_to_classified_data = argv[1];;
+	char const *path_to_classified_data = argv[1];
 	char const *path_to_unclassified_data = argv[2];
-	int class_column = strtol(argv[3], NULL, 0) - 1;
-
+	char const *path_to_classifying_data = argv[3];
+	int class_column = strtol(argv[4], NULL, 0) - 1;
+	int k = strtol(argv[5], NULL, 0);
 
 	FILE *classified_data = fopen(path_to_classified_data, "r");
 	FILE *unclassified_data = fopen(path_to_unclassified_data, "r");
+	FILE *classifying_data = fopen(path_to_classifying_data, "w");
 
 	char unclassified_buffer[BUFFER_SIZE];
 	int num_of_columns;
@@ -68,8 +69,8 @@ int main(int argc, char const *argv[])
 
 		temp_sort(distances, num_of_rows);
 
+		k_classify(distances, k, classifying_data);
 
-		k_classify(distances, 3);
 
 		// printf("\n==========================================================\n");
 
@@ -93,6 +94,7 @@ int main(int argc, char const *argv[])
 
 	}
 
+	fclose(classifying_data);
 	return 0;
 }
 
@@ -154,7 +156,7 @@ char is_class_in(char const *class, char const **classes_u, int added)
 
 
 
-void k_classify(ClassInfo *data, int k)
+void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 {
 	char const *classes_unique[k];
 	int added = 0;
@@ -207,7 +209,7 @@ void k_classify(ClassInfo *data, int k)
 		}
 	}
 
-	printf("Class %c is closest with avg. distance: %f\n", *classes_unique[smallest_index], avg_distances[smallest_index]);
+	printf("Class %s is closest with avg. distance: %f\n", classes_unique[smallest_index], avg_distances[smallest_index]);
 
 	// Works to here, gets unique class, gets average distance per class, and gets shortest avg distance
 
@@ -216,6 +218,8 @@ void k_classify(ClassInfo *data, int k)
 	// - Free memory,
 	// - Clean up code and remove debug info.
 	printf("=========\n");
+
+	fprintf(classifying_file, "%s\n", classes_unique[smallest_index]);
 }
 
 
