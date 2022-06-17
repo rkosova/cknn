@@ -65,35 +65,20 @@ int main(int argc, char const *argv[])
 			distances[i].class_value = classified_separate[class_column];
 
 			i++;
+			free(classified_separate);
+			free(classified_converted);
 		}	
 
 		temp_sort(distances, num_of_rows);
-
 		k_classify(distances, k, classifying_data);
-
-
-		// printf("\n==========================================================\n");
-
-
-		for(int i=0; i<num_of_rows; i++) {
-			printf("\nindex: %i, distance: %lf, class: %s\n", distances[i].index, distances[i].distance, distances[i].class_value);
-		}
-
-		printf("\n\n");
-		// printf("Data point %s has class %s\n", unclassified_buffer, distances[0].class_value);
-
-
-		// printf("\n==========================================================\n");
-
 		rewind(classified_data);
-
-		
-
-		// free memory
-
-
+		free(unclassified_separate);
+		free(unclassified_converted);
 	}
 
+	
+	fclose(classified_data);
+	fclose(unclassified_data);
 	fclose(classifying_data);
 	return 0;
 }
@@ -125,23 +110,9 @@ void temp_sort(ClassInfo *data, int num_of_rows) // selection sort for now
 				*(data+i) = temp;
 			}
 		}
-
-		// printf("\niter %i, i: %i, pos_current_smallest: %i\n", i, i, pos_current_smallest);
-
-		// printf("--------------------------------------------------\n");
-
-		// for(int i=0; i<num_of_rows; i++) {
-		// 	printf("\nindex: %i, distance: %lf, class: %s\n", data[i].index, data[i].distance, data[i].class_value);
-		// }
-
-		// printf("--------------------------------------------------\n\n");
 	}
 }
 
-// TODO: 
-
-//  - Add check to see if number of rows > k
-// 	- Classify using k-neighbours
 
 char is_class_in(char const *class, char const **classes_u, int added)
 {
@@ -153,7 +124,6 @@ char is_class_in(char const *class, char const **classes_u, int added)
 
 	return 0;
 }
-
 
 
 void k_classify(ClassInfo *data, int k, FILE *classifying_file)
@@ -170,14 +140,6 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 			added++;
 		}
 	}
- 
-	printf("Unique classes are: \n");
-
-	for (int i=0; i<added; i++) {
-		printf("%c\n", *classes_unique[i]);
-	} // works up to here!! gets all unique classes
-
-	printf("=========\n");
 
 	double avg_distances[added];
 	double count = 0.0;
@@ -195,9 +157,6 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 		avg_distances[i] /= count;
 	}
 
-	for (int i=0; i<added; i++) {
-		printf("Class %c avg. distance: %f\n", *classes_unique[i], avg_distances[i]);
-	}
 
 	int smallest_index = 0;
 
@@ -209,17 +168,9 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 		}
 	}
 
-	printf("Class %s is closest with avg. distance: %f\n", classes_unique[smallest_index], avg_distances[smallest_index]);
-
-	// Works to here, gets unique class, gets average distance per class, and gets shortest avg distance
-
 	// LEFT TO DO:
-	// - Write class to file,
 	// - Free memory,
 	// - Clean up code and remove debug info.
-	printf("=========\n");
 
 	fprintf(classifying_file, "%s\n", classes_unique[smallest_index]);
 }
-
-
