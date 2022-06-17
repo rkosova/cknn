@@ -17,7 +17,7 @@ typedef struct {
 int get_rows(FILE *classified_data, int const BUFFER_SIZE);
 void temp_sort(ClassInfo *data, int num_of_rows);
 void k_classify(ClassInfo *data, int k);
-char is_class_in(char const *word, char const **data, int *added);
+char is_class_in(char const *word, char const **data, int added);
 void k_classify(ClassInfo *data, int k);
 
 
@@ -74,10 +74,11 @@ int main(int argc, char const *argv[])
 		// printf("\n==========================================================\n");
 
 
-		// for(int i=0; i<num_of_rows; i++) {
-		// 	printf("\nindex: %i, distance: %lf, class: %s\n", distances[i].index, distances[i].distance, distances[i].class_value);
-		// }
+		for(int i=0; i<num_of_rows; i++) {
+			printf("\nindex: %i, distance: %lf, class: %s\n", distances[i].index, distances[i].distance, distances[i].class_value);
+		}
 
+		printf("\n\n");
 		// printf("Data point %s has class %s\n", unclassified_buffer, distances[0].class_value);
 
 
@@ -131,7 +132,7 @@ void temp_sort(ClassInfo *data, int num_of_rows) // selection sort for now
 		// 	printf("\nindex: %i, distance: %lf, class: %s\n", data[i].index, data[i].distance, data[i].class_value);
 		// }
 
-		// printf("--------------------------------------------------\n");
+		// printf("--------------------------------------------------\n\n");
 	}
 }
 
@@ -140,15 +141,14 @@ void temp_sort(ClassInfo *data, int num_of_rows) // selection sort for now
 //  - Add check to see if number of rows > k
 // 	- Classify using k-neighbours
 
-char is_class_in(char const *class, char const **classes_u, int *added)
+char is_class_in(char const *class, char const **classes_u, int added)
 {
-	for (int i=0; i < *added; i++) {
+	for (int i=0; i < added; i++) {
 		if (!strcmp(class, *(classes_u+i))) {
 			return 1;
 		}
 	}
 
-	(*added)++;
 	return 0;
 }
 
@@ -160,18 +160,62 @@ void k_classify(ClassInfo *data, int k)
 	int added = 0;
 
 	classes_unique[0] = data->class_value;
+	added = 1;
 
 	for (int i=1; i<k; i++) {
-		if (!is_class_in((data+i)->class_value, classes_unique, &added)) {
+		if (!is_class_in((data+i)->class_value, classes_unique, added)) {
 			classes_unique[added] = (data+i)->class_value;
+			added++;
 		}
 	}
-
-	printf("%i\n", added); 
+ 
+	printf("Unique classes are: \n");
 
 	for (int i=0; i<added; i++) {
 		printf("%c\n", *classes_unique[i]);
 	} // works up to here!! gets all unique classes
+
+	printf("=========\n");
+
+	double avg_distances[added];
+	double count = 0.0;
+
+
+	for (int i=0; i<added; i++) {
+		count = 0.0;
+		for (int j=0; j<k; j++) {
+			if (!strcmp((data+j)->class_value, *(classes_unique+i))) {
+				count++;
+				avg_distances[i] += (data+j)->distance;
+			}
+		}
+
+		avg_distances[i] /= count;
+	}
+
+	for (int i=0; i<added; i++) {
+		printf("Class %c avg. distance: %f\n", *classes_unique[i], avg_distances[i]);
+	}
+
+	int smallest_index = 0;
+
+	for (int i=smallest_index; i<added; i++) {
+		for (int j=i; j<added; j++) {
+			if (avg_distances[i] > avg_distances[j]) {
+				smallest_index = j;
+			}
+		}
+	}
+
+	printf("Class %c is closest with avg. distance: %f\n", *classes_unique[smallest_index], avg_distances[smallest_index]);
+
+	// Works to here, gets unique class, gets average distance per class, and gets shortest avg distance
+
+	// LEFT TO DO:
+	// - Write class to file,
+	// - Free memory,
+	// - Clean up code and remove debug info.
+	printf("=========\n");
 }
 
 
