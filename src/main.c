@@ -5,7 +5,6 @@
 #include "../h/strdstrtod.h"
 #include "../h/distance.h"
 
-// comments are temporary docs so i dont forget what code does when i write actual docs lol
 
 typedef struct {
 	int index;
