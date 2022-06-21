@@ -142,6 +142,7 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 	}
 
 	double avg_distances[added];
+	int class_counts[added];
 	double count = 0.0;
 
 
@@ -155,8 +156,19 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 		}
 
 		avg_distances[i] /= count;
+		class_counts[i] = count;
 	}
 
+
+	int largest_index = 0; 
+
+	for (int i=largest_index; i<added; i++) {
+		for (int j=i; j<added; j++) {
+			if (class_counts[i] < class_counts[j]) {
+				largest_index = j;
+			}
+		}
+	}	// check again, this is for mode doofus 
 
 	int smallest_index = 0;
 
@@ -169,5 +181,6 @@ void k_classify(ClassInfo *data, int k, FILE *classifying_file)
 	}
 
 
-	fprintf(classifying_file, "%s\n", classes_unique[smallest_index]);
+	// fprintf(classifying_file, "%s\n", classes_unique[smallest_index]); average class distance
+	fprintf(classifying_file, "%s\n", classes_unique[largest_index]);
 }
